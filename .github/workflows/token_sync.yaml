@@ -13,10 +13,14 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
-
-
-      - run: |
-          cd token_pipeline
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: token_pipeline/package-lock.json
+      
+      - name: Install & Build Tokens
+        working-directory: token_pipeline
+        run: |
           npm install
           npm run build
 
