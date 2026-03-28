@@ -1,0 +1,9 @@
+name: flutter_token_system
+
+packages:
+  - packages/**
+  - apps/**
+
+scripts:
+  bootstrap:
+    run: melos bootstrap

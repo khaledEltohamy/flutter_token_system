@@ -1,0 +1,30 @@
+name: Token Sync
+
+on:
+  push:
+    paths:
+      - 'token_pipeline/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+
+      - run: npm install
+
+      - run: |
+          cd token_pipeline
+          npm install
+          npm run build
+
+      - name: Commit tokens
+        run: |
+          git config user.name "bot"
+          git config user.email "bot@bot.com"
+          git add .
+          git commit -m "update tokens" || echo "no changes"
+          git push

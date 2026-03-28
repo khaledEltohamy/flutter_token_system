@@ -1,0 +1,15 @@
+{
+  "source": ["tokens.json"],
+  "platforms": {
+    "flutter": {
+      "transformGroup": "flutter",
+      "buildPath": "../packages/tokens/lib/generated/",
+      "files": [
+        {
+          "destination": "global_tokens.dart",
+          "format": "flutter/class.dart"
+        }
+      ]
+    }
+  }
+}
