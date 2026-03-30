@@ -5,6 +5,12 @@
     "build": "style-dictionary build"
   },
   "devDependencies": {
-    "style-dictionary": "^3.9.0"
-  }
+    "style-dictionary": "^3.9.2"
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
 }
