@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Load tokens.json
-const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
+const tokens = JSON.parse(fs.readFileSync(__dirname + '/tokens.json', 'utf8'));
 
 // Flutter output path
 const outputPath = path.join(__dirname, '../packages/tokens/lib/global/global_tokens.dart');
