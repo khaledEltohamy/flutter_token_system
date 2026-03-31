@@ -3,11 +3,12 @@
   "platforms": {
     "flutter": {
       "transformGroup": "flutter",
-      "buildPath": "../packages/tokens/lib/generated/",
+      "buildPath": "../packages/tokens/lib/global/",
       "files": [
         {
           "destination": "global_tokens.dart",
-          "format": "flutter/class.dart"
+          "format": "flutter/class",
+          "className": "GlobalTokens"
         }
       ]
     }
