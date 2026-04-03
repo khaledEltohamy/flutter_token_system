@@ -21,43 +21,41 @@ class ${className} {
   ${className}._();
 `;
 
-  function processTokens(obj, prefix = '') {
-    for (const [key, value] of Object.entries(obj)) {
-      const name = prefix ? `${prefix}_${key}` : key;
+function processTokens(obj, prefix = '', isAlias) {
+  for (const [key, value] of Object.entries(obj)) {
+    const name = prefix ? `${prefix}_${key}` : key;
 
-      // Leaf node
-      if (value && typeof value === 'object' && ('value' in value || '$value' in value)) {
-        const safeName = name.replace(/\s+/g, '_').replace(/\./g, '_').toLowerCase();
-        const rawValue = value.value || value.$value;
+    if (value && typeof value === 'object' && ('value' in value || '$value' in value)) {
+      const safeName = name.replace(/\s+/g, '_').replace(/\./g, '_').toLowerCase();
+      const rawValue = value.value || value.$value;
 
-        let colorReference;
+      let colorReference;
 
-        if (isAlias && typeof rawValue === 'string' && rawValue.startsWith('{') && rawValue.endsWith('}')) {
-          // Convert {color.gray.0} → GlobalTokens.gray_0
-          const pathKeys = rawValue.replace(/[{}]/g, '').split('.');
-          if (pathKeys[0] === 'color') {
-            const globalName = pathKeys.slice(1).join('_').replace(/\./g, '_').toLowerCase();
-            colorReference = `GlobalTokens.${globalName}`;
-          } else {
-            console.warn(`⚠️ Unsupported reference: ${rawValue}. Using white.`);
-            colorReference = 'Color(0xFFFFFFFF)';
-          }
+      if (isAlias && typeof rawValue === 'string' && rawValue.startsWith('{') && rawValue.endsWith('}')) {
+        const pathKeys = rawValue.replace(/[{}]/g, '').split('.');
+        if (pathKeys[0] === 'color') {
+          const globalName = pathKeys.slice(1).join('_').replace(/\./g, '_').toLowerCase();
+          colorReference = `GlobalTokens.${globalName}`;
         } else {
-          // fallback to static color
-          const hex = rawValue.replace('#', '').toUpperCase();
-          colorReference = `Color(0xFF${hex})`;
+          console.warn(`⚠️ Unsupported reference: ${rawValue}. Using white.`);
+          colorReference = 'Color(0xFFFFFFFF)';
         }
+      } else {
+        const hex = rawValue.replace('#', '').toUpperCase();
+        colorReference = `Color(0xFF${hex})`;
+      }
 
-        output += `  static const Color ${safeName} = ${colorReference};\n`;
-      }
-      // Nested object
-      else if (value && typeof value === 'object') {
-        processTokens(value, name);
-      }
+      output += `  static const Color ${safeName} = ${colorReference};\n`;
+    } 
+    else if (value && typeof value === 'object') {
+      processTokens(value, name, isAlias); // ✅ Pass isAlias here!
     }
   }
+}
 
-  processTokens(tokenSet);
+
+  processTokens(tokenSet, '', isAlias);
+
 
   output += `}\n`;
 
