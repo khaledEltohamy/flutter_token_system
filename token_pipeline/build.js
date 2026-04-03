@@ -2,8 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 // Load tokens.json
-const tokensPath = path.join(__dirname, '../tokens.json');
+const tokensPath = path.join(__dirname, 'tokens.json');
 const tokens = JSON.parse(fs.readFileSync(tokensPath, 'utf8'));
+// const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
+
+// Flutter output path
+const outputPath = path.join(__dirname, '../packages/tokens/lib/global/global_tokens.dart');
 
 /**
  * Resolve token references مثل:
