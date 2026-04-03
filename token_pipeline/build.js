@@ -57,29 +57,41 @@ class ${className} {
   ${className}._();
 `;
 
-  function processTokens(obj, prefix = '') {
-    for (const [key, value] of Object.entries(obj)) {
-      const name = prefix ? `${prefix}_${key}` : key;
+function processTokens(obj, prefix = '', isAlias = false) {
+  for (const [key, value] of Object.entries(obj)) {
+    const name = prefix ? `${prefix}_${key}` : key;
 
-      // If token leaf with color
-      if (value.$type === 'color' || (value.value && typeof value.value === 'string')) {
-        const safeName = name
-          .replace(/\s+/g, '_')
-          .replace(/\./g, '_')
-          .toLowerCase();
+    // Leaf node: has `value` or `$value`
+    if ((value && typeof value === 'object') && ('value' in value || '$value' in value)) {
+      const safeName = name.replace(/\s+/g, '_').replace(/\./g, '_').toLowerCase();
+      const rawValue = value.value || value.$value;
 
-        const rawValue = resolveValue(value.$value || value.value);
+      let colorReference;
+
+      if (isAlias && typeof rawValue === 'string' && rawValue.startsWith('{') && rawValue.endsWith('}')) {
+        // Convert {color.gray.0} → GlobalTokens.gray_0
+        const pathKeys = rawValue.replace(/[{}]/g, '').split('.');
+        if (pathKeys[0] === 'color') {
+          const globalName = pathKeys.slice(1).join('_').replace(/\./g, '_').toLowerCase();
+          colorReference = `GlobalTokens.${globalName}`;
+        } else {
+          throw new Error(`❌ Unsupported reference: ${rawValue}`);
+        }
+      } else {
+        // fallback to static color
         const hex = rawValue.replace('#', '').toUpperCase();
-        const color = `0xFF${hex}`;
+        colorReference = `Color(0xFF${hex})`;
+      }
 
-        output += `  static const Color ${safeName} = Color(${color});\n`;
-      }
-      // If nested object
-      else if (typeof value === 'object') {
-        processTokens(value, name);
-      }
+      output += `  static const Color ${safeName} = ${colorReference};\n`;
+    } 
+    // Nested object
+    else if (value && typeof value === 'object') {
+      processTokens(value, name, isAlias);
     }
   }
+}
+
 
   processTokens(tokenSet);
 
