@@ -4,35 +4,43 @@ const path = require('path');
 // Load tokens.json
 const tokensPath = path.join(__dirname, 'tokens.json');
 const tokens = JSON.parse(fs.readFileSync(tokensPath, 'utf8'));
-// const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
 
-// Flutter output path
-const outputPath = path.join(__dirname, '../packages/tokens/lib/global/global_tokens.dart');
+// Dart output paths
+const globalOutputPath = path.join(__dirname, '../packages/tokens/lib/global/global_tokens.dart');
+const aliasOutputPath = path.join(__dirname, '../packages/tokens/lib/alias/alias_tokens.dart');
 
 /**
- * Resolve token references مثل:
- * {color.gray.900}
+ * Resolve token references like {color.gray.900}
  */
 function resolveValue(val) {
   if (typeof val !== 'string') return val;
 
   if (val.startsWith('{') && val.endsWith('}')) {
-    const pathKeys = val.replace(/[{}]/g, '').split('.');
+    const pathKeys = val.replace(/[{}]/g, '').split('.'); // e.g. ['color','gray','0']
 
-    let ref = tokens;
+    let ref;
+    if (pathKeys[0] === 'color') {
+      ref = tokens.global;
+      pathKeys.shift(); // remove 'color'
+    } else {
+      ref = tokens;
+    }
 
     for (const key of pathKeys) {
       if (!ref[key]) {
-        throw new Error(`❌ Token reference not found: ${val}`);
+        console.warn(`⚠️ Token reference not found: ${val}. Using default white.`);
+        return '#FFFFFF'; // fallback
       }
       ref = ref[key];
     }
 
-    if (!ref.$value) {
-      throw new Error(`❌ Invalid reference (no $value): ${val}`);
+    // Return the actual value
+    if (!ref.value && !ref.$value) {
+      console.warn(`⚠️ Invalid reference (no value) for: ${val}. Using default white.`);
+      return '#FFFFFF';
     }
 
-    return ref.$value;
+    return ref.value || ref.$value;
   }
 
   return val;
@@ -53,21 +61,19 @@ class ${className} {
     for (const [key, value] of Object.entries(obj)) {
       const name = prefix ? `${prefix}_${key}` : key;
 
-      // If token leaf
-      if (value.$type === 'color') {
+      // If token leaf with color
+      if (value.$type === 'color' || (value.value && typeof value.value === 'string')) {
         const safeName = name
           .replace(/\s+/g, '_')
           .replace(/\./g, '_')
           .toLowerCase();
 
-        const rawValue = resolveValue(value.$value);
+        const rawValue = resolveValue(value.$value || value.value);
         const hex = rawValue.replace('#', '').toUpperCase();
-
         const color = `0xFF${hex}`;
 
         output += `  static const Color ${safeName} = Color(${color});\n`;
       }
-
       // If nested object
       else if (typeof value === 'object') {
         processTokens(value, name);
@@ -87,20 +93,12 @@ class ${className} {
 
 // 🔥 Generate Global Tokens
 if (tokens.global) {
-  generateDartClass(
-    tokens.global,
-    'GlobalTokens',
-    path.join(__dirname, '../packages/tokens/lib/global/global_tokens.dart')
-  );
+  generateDartClass(tokens.global, 'GlobalTokens', globalOutputPath);
 }
 
 // 🔥 Generate Alias Tokens
 if (tokens.alias) {
-  generateDartClass(
-    tokens.alias,
-    'AliasTokens',
-    path.join(__dirname, '../packages/tokens/lib/alias/alias_tokens.dart')
-  );
+  generateDartClass(tokens.alias, 'AliasTokens', aliasOutputPath);
 }
 
 console.log('🎉 Token generation completed!');
