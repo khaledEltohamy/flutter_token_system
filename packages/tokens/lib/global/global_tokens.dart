@@ -1,6 +1,7 @@
 // GENERATED FILE - DO NOT EDIT
 import 'dart:ui';
 
+
 class GlobalTokens {
   GlobalTokens._();
   static const Color primary_50 = Color(0xFFEEF4FF);
