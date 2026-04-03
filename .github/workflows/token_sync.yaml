@@ -4,11 +4,13 @@ on:
   push:
     paths:
       - 'token_pipeline/**'
-  workflow_dispatch: # لتشغيله يدوياً
+      - 'tokens.json'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -30,11 +32,12 @@ jobs:
       - name: Commit & Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: update global_tokens.dart"
+          commit_message: "chore: update design tokens (global + alias)"
           branch: main
-          file_pattern: "packages/tokens/lib/global/global_tokens.dart"
+          file_pattern: |
+            packages/tokens/lib/global/global_tokens.dart
+            packages/tokens/lib/alias/alias_tokens.dart
           commit_user_name: github-actions[bot]
           commit_user_email: github-actions[bot]@users.noreply.github.com
-          push: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
