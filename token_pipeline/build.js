@@ -33,7 +33,6 @@ function resolveValue(val) {
 
   return val;
 }
-
 /**
  * Generate Dart class from token set
  */
