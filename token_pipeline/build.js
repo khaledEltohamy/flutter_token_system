@@ -62,7 +62,8 @@ class ${className} {
   processTokens(tokenSet);
 
   output += `}\n`;
-
+  
+  console.log(JSON.stringify(tokens.alias, null, 2));
   fs.mkdirSync(path.dirname(outputFile), { recursive: true });
   fs.writeFileSync(outputFile, output, 'utf8');
 
