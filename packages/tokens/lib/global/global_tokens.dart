@@ -34,4 +34,7 @@ class GlobalTokens {
   static const Color yellow_100 = Color(0xFFFEF3C7);
   static const Color yellow_500 = Color(0xFFF59E0B);
   static const Color yellow_700 = Color(0xFFB45309);
+  static const Color blue_100 = Color(0xFFDBEAFE);
+  static const Color blue_500 = Color(0xFF3B82F6);
+  static const Color blue_700 = Color(0xFF1D4ED8);
 }
