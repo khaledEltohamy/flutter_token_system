@@ -3,24 +3,20 @@ const path = require('path');
 
 // Load tokens.json
 const tokensPath = path.join(__dirname, 'tokens.json');
+if (!fs.existsSync(tokensPath)) {
+  throw new Error(`❌ tokens.json not found at: ${tokensPath}`);
+}
 const tokens = JSON.parse(fs.readFileSync(tokensPath, 'utf8'));
-// const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
-
-// Flutter output path
-const outputPath = path.join(__dirname, '../packages/tokens/lib/global/global_tokens.dart');
 
 /**
- * Resolve token references مثل:
- * {color.gray.900}
+ * Resolve token references مثل: {color.gray.900}
  */
 function resolveValue(val) {
   if (typeof val !== 'string') return val;
 
   if (val.startsWith('{') && val.endsWith('}')) {
     const pathKeys = val.replace(/[{}]/g, '').split('.');
-
     let ref = tokens;
-
     for (const key of pathKeys) {
       if (!ref[key]) {
         throw new Error(`❌ Token reference not found: ${val}`);
@@ -28,11 +24,11 @@ function resolveValue(val) {
       ref = ref[key];
     }
 
-    if (!ref.$value) {
-      throw new Error(`❌ Invalid reference (no $value): ${val}`);
+    if (!ref.value && !ref.$value) {
+      throw new Error(`❌ Invalid reference (no value): ${val}`);
     }
 
-    return ref.$value;
+    return ref.value || ref.$value;
   }
 
   return val;
@@ -54,15 +50,14 @@ class ${className} {
       const name = prefix ? `${prefix}_${key}` : key;
 
       // If token leaf
-      if (value.$type === 'color') {
+      if (value.type === 'color' || value.$type === 'color') {
         const safeName = name
           .replace(/\s+/g, '_')
           .replace(/\./g, '_')
           .toLowerCase();
 
-        const rawValue = resolveValue(value.$value);
+        const rawValue = resolveValue(value.value || value.$value);
         const hex = rawValue.replace('#', '').toUpperCase();
-
         const color = `0xFF${hex}`;
 
         output += `  static const Color ${safeName} = Color(${color});\n`;
@@ -81,7 +76,6 @@ class ${className} {
 
   fs.mkdirSync(path.dirname(outputFile), { recursive: true });
   fs.writeFileSync(outputFile, output, 'utf8');
-
   console.log(`✅ ${className} generated at ${outputFile}`);
 }
 
