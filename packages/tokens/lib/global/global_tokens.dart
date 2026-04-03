@@ -1,6 +1,6 @@
 // GENERATED FILE - DO NOT EDIT
 import 'dart:ui';
-
+import '../global/global_tokens.dart';
 
 class GlobalTokens {
   GlobalTokens._();
