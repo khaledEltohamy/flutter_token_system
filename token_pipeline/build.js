@@ -12,7 +12,7 @@ const aliasOutputPath = path.join(__dirname, '../packages/tokens/lib/alias/alias
 /**
  * Generate Dart class from token set
  */
-function generateDartClass(tokenSet, className, outputFile, isAlias = false) {
+function generateDartClass(tokenSet, className, outputFile, isAlias = true) {
   let output = `// GENERATED FILE - DO NOT EDIT
 import 'dart:ui';
 ${isAlias ? "import '../global/global_tokens.dart';" : ''}
