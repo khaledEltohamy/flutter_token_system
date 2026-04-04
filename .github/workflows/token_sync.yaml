@@ -28,16 +28,21 @@ jobs:
       - name: Generate Dart Tokens
         run: |
           node token_pipeline/build.js
-
+      
+      - name: Check changes
+        run: |
+          git status
+          git diff
+      
       - name: Commit & Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: update design tokens (global + alias)"
           branch: main
           file_pattern: |
-            packages/tokens/lib/global/global_tokens.dart
-            packages/tokens/lib/alias/alias_tokens.dart
+            packages/tokens/lib/**
           commit_user_name: github-actions[bot]
           commit_user_email: github-actions[bot]@users.noreply.github.com
+          skip_dirty_check: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

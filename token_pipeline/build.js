@@ -62,8 +62,7 @@ class ${className} {
   processTokens(tokenSet);
 
   output += `}\n`;
-  
-  console.log(JSON.stringify(tokens.alias, null, 2));
+
   fs.mkdirSync(path.dirname(outputFile), { recursive: true });
   fs.writeFileSync(outputFile, output, 'utf8');
 
@@ -77,6 +76,7 @@ if (tokens.global) {
 
 // 🔥 Generate Alias Tokens
 if (tokens.alias) {
+   console.log('👉 Generating AliasTokens...');
   generateDartClass(tokens.alias, 'AliasTokens', aliasOutputPath, true);
 }
 
