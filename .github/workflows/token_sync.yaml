@@ -34,11 +34,24 @@ jobs:
           git status
           git diff
       
-      - name: Commit & Push changes
+      - name: Commit & Push changes (main)
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: update design tokens (global + alias)"
           branch: main
+          file_pattern: |
+            packages/tokens/lib/**
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com
+          skip_dirty_check: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Commit & Push changes (feature/tokens-figma-async)
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: add design tokens"
+          branch: feature/tokens-figma-async
           file_pattern: |
             packages/tokens/lib/**
           commit_user_name: github-actions[bot]
