@@ -5,6 +5,7 @@ import 'dart:ui';
 class GlobalTokens {
   GlobalTokens._();
   static const Color primary_50 = Color(0xFFEEF4FF);
+  static const Color primary_55 = Color(0xFFEEF4FF);
   static const Color primary_100 = Color(0xFFD9E4FF);
   static const Color primary_200 = Color(0xFFB3C9FF);
   static const Color primary_300 = Color(0xFF8DAEFF);
